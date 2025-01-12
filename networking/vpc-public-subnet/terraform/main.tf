@@ -65,13 +65,13 @@ resource "aws_security_group" "ec2" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["${chmop(data.http.myip.response_body)}/32"]
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   egress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
@@ -82,3 +82,40 @@ resource "aws_security_group" "ec2" {
 }
 
 
+# # Data source to get Amazon Linux 2 AMI
+# data "aws_ami" "amazon_linux_2" {
+#   most_recent = true
+#   owners = [ "amazon" ]
+
+#   filter {
+#     name = "name"
+#     values = "amzn2-ami-kernel-5.10-hvm-*-x86_64-gp2"
+#   }
+
+#   filter {
+#     name = "virtualization-type"
+#     values = [ "hvm" ]
+#   }
+
+#   filter {
+#     name = "root-device-type"
+#     values = [ "ebs" ]
+#   }
+# }
+
+
+# EC2 Instance
+resource "aws_instance" "main" {
+  ami = var.ami_id
+  instance_type = var.instance_type
+  subnet_id = aws_subnet.public.id
+  key_name = var.key_name
+
+  vpc_security_group_ids = [ aws_security_group.ec2.id ]
+
+  tags = {
+    Name = "my-test-instance"
+    Environment = var.environment
+  }
+
+}
