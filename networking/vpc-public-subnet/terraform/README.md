@@ -20,6 +20,9 @@ teraform apply
 terraform output -raw instance_public_ip
 ```
 5. Once you get the public ip, try connecting to the instance using you key pair.
+```bash
+  ssh -i <your-key.pem> ec2-user@<instance-public-ip>
+```
 ------
 
 ### Clean up
